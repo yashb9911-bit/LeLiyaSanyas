@@ -141,7 +141,7 @@ transform:translateY(100vh);
 24 AUGUST 2026
 </div>
 
-<div id="countdown"></div>
+<div id="countdown" class="hidden"></div>
 
 <img src="couple.jpg">
 
@@ -250,29 +250,58 @@ ctx.font="20px Poppins"
 ctx.fillText("Scratch Here",90,65)
 
 let scratching=false
+let revealed=false
 
-canvas.addEventListener("mousedown",()=>scratching=true)
-canvas.addEventListener("mouseup",()=>scratching=false)
-
-canvas.addEventListener("mousemove",function(e){
-
-if(!scratching) return
+function scratch(x,y){
 
 ctx.globalCompositeOperation="destination-out"
 
 ctx.beginPath()
-
-ctx.arc(e.offsetX,e.offsetY,15,0,Math.PI*2)
-
+ctx.arc(x,y,18,0,Math.PI*2)
 ctx.fill()
 
+if(!revealed){
+
+revealed=true
+
 document.getElementById("date").classList.remove("hidden")
+document.getElementById("countdown").classList.remove("hidden")
 
 startConfetti()
+startCountdown()
 
+}
+
+}
+
+canvas.addEventListener("mousedown",()=>scratching=true)
+canvas.addEventListener("mouseup",()=>scratching=false)
+
+canvas.addEventListener("mousemove",(e)=>{
+if(!scratching) return
+scratch(e.offsetX,e.offsetY)
 })
 
-startCountdown()
+canvas.addEventListener("touchstart",(e)=>{
+scratching=true
+})
+
+canvas.addEventListener("touchend",(e)=>{
+scratching=false
+})
+
+canvas.addEventListener("touchmove",(e)=>{
+
+if(!scratching) return
+
+let rect=canvas.getBoundingClientRect()
+
+let x=e.touches[0].clientX-rect.left
+let y=e.touches[0].clientY-rect.top
+
+scratch(x,y)
+
+})
 
 }
 
@@ -285,13 +314,9 @@ let confetti=document.createElement("div")
 confetti.innerHTML="🎉"
 
 confetti.style.position="fixed"
-
 confetti.style.left=Math.random()*100+"vw"
-
 confetti.style.top="-20px"
-
 confetti.style.fontSize="30px"
-
 confetti.style.animation="fall 3s linear"
 
 document.body.appendChild(confetti)
@@ -314,9 +339,7 @@ let diff=wedding-now
 
 let days=Math.floor(diff/(1000*60*60*24))
 
-document.getElementById("countdown").innerHTML=
-
-days+" days to go 💍"
+document.getElementById("countdown").innerHTML = days+" days to go 💍"
 
 },1000)
 
