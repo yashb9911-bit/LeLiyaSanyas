@@ -18,6 +18,7 @@ background:linear-gradient(135deg,#fff0f3,#ffe3ec);
 text-align:center;
 padding:30px;
 margin:0;
+overflow-x:hidden;
 }
 
 .container{
@@ -77,7 +78,7 @@ margin-top:25px;
 
 .date{
 font-family:'Playfair Display', serif;
-font-size:46px;
+font-size:48px;
 margin-top:20px;
 color:#ff2e63;
 }
@@ -89,9 +90,23 @@ color:#444;
 }
 
 .reveal-title{
-font-size:26px;
+font-size:18px;
 margin-bottom:10px;
-word-wrap:break-word;
+}
+
+.progress{
+height:8px;
+background:#eee;
+border-radius:20px;
+margin-bottom:20px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+background:#ff2e63;
+width:0%;
+transition:0.4s;
 }
 
 .heart{
@@ -117,7 +132,7 @@ transform:translateY(110vh) rotate(360deg);
 <div class="container">
 
 <h1>Yash ❤️ Sanya</h1>
-<p class="hashtag">#LeLiyaSanyas</p>
+<p class="hashtag">#LeLiyaSanYas</p>
 
 <div id="start" class="card">
 
@@ -136,7 +151,15 @@ transform:translateY(110vh) rotate(360deg);
 
 </div>
 
-<div id="quiz" class="card hidden"></div>
+<div id="quiz" class="card hidden">
+
+<div class="progress">
+<div id="progressBar" class="progress-bar"></div>
+</div>
+
+<div id="quizContent"></div>
+
+</div>
 
 <div id="reveal" class="card hidden">
 
@@ -146,13 +169,15 @@ transform:translateY(110vh) rotate(360deg);
 
 <button onclick="revealDate()">Reveal the Date 💍</button>
 
-<div id="date" class="date hidden">
-24 AUGUST 2026
-</div>
+<div id="date" class="date hidden"></div>
 
 <div id="countdown" class="hidden"></div>
 
 <img src="couple.jpg">
+
+<audio id="music" loop>
+<source src="music.mp3" type="audio/mpeg">
+</audio>
 
 </div>
 
@@ -165,39 +190,49 @@ let currentQuestions=[]
 
 const yashQuestions=[
 
-{q:"Which sport does Yash follow the most?",
-options:["Cricket","Football","Badminton"]},
+{q:"What is one thing Yash loves the most?",
+options:["Sneakers","Football","Music"],
+correct:"Sneakers"},
 
 {q:"What does Yash enjoy doing most?",
-options:["Writing poetry","Watching movies","Sleeping"]},
+options:["Making Music","Watching movies","Sleeping"],
+correct:"Making Music"},
 
-{q:"What does Yash love most?",
-options:["Traveling","Shopping","Cooking"]},
+{q:"What is Yash's artist name?",
+options:["Ehsaas","Lil B","Big B"],
+correct:"Ehsaas"},
 
 {q:"Yash’s favourite weekend plan?",
-options:["Watching sports","Parties","Shopping"]},
+options:["Watching football/cricket","Party with friends","Shopping"],
+correct:"Party with friends"},
 
-{q:"Yash's biggest passion?",
-options:["Music","Fashion","Dancing"]}
+{q:"What is one thing Yash really wants to do?",
+options:["Go to London","Perform live infront of big audience","Just chill"],
+correct:"Perform live infront of big audience"}
 
 ]
 
 const sanyaQuestions=[
 
-{q:"What dessert does Sanya love?",
-options:["Chocolate","Ice Cream","Cake"]},
+{q:"What's that one thing that would instantly make Sanya smile if she is in a bad mood?",
+options:["Fun moments with close ones","Watching movies","Eating tasty food"],
+correct:"Fun moments with close ones"},
 
-{q:"What does Sanya enjoy most?",
-options:["Travel","Shopping","Reading"]},
+{q:"How many dimples does Sanya have?",
+options:["Two","Three","None"],
+correct:"Three"},
 
-{q:"Sanya’s dream vacation?",
-options:["Beach","Mountains","City"]},
+{q:"Has Sanya ever had a fracture?",
+options:["Yes","No"],
+correct:"No"},
 
-{q:"What annoys Sanya about Yash?",
-options:["Sports obsession","Bad jokes","Sleeping late"]},
+{q:"What is something Sanya always love but never asks directly?",
+options:["Reassuarance","Love","Time"],
+correct:"Reassuarance"},
 
-{q:"Who said I love you first?",
-options:["Yash","Sanya","Both"]}
+{q:"Sanya's first crush.",
+options:["Shahid Kapoor","SRK","Hritik Roshan"],
+correct:"SRK"}
 
 ]
 
@@ -212,6 +247,7 @@ document.getElementById("side").classList.add("hidden")
 
 currentQuestions = side==="yash" ? yashQuestions : sanyaQuestions
 
+step=0
 showQuestion()
 
 }
@@ -222,41 +258,85 @@ if(step >= currentQuestions.length){
 
 document.getElementById("quiz").classList.add("hidden")
 document.getElementById("reveal").classList.remove("hidden")
-
 return
 }
 
 let q=currentQuestions[step]
 
-let html=`<h2>${q.q}</h2>`
+let html=`<h3>Question ${step+1} / ${currentQuestions.length}</h3>`
+html+=`<h2>${q.q}</h2>`
 
 q.options.forEach(option=>{
-html+=`<button onclick="nextQuestion()">${option}</button>`
+html+=`<button onclick="checkAnswer('${option}')">${option}</button>`
 })
 
-document.getElementById("quiz").innerHTML=html
+document.getElementById("quizContent").innerHTML=html
+
 document.getElementById("quiz").classList.remove("hidden")
+
+let progress=(step/currentQuestions.length)*100
+document.getElementById("progressBar").style.width=progress+"%"
 
 }
 
-function nextQuestion(){
+function checkAnswer(answer){
+
+let correctAnswer=currentQuestions[step].correct
+
+if(answer===correctAnswer){
+
 step++
 showQuestion()
+
+}else{
+
+alert("Wrong answer 😜 Start again!")
+
+step=0
+
+document.getElementById("quiz").classList.add("hidden")
+document.getElementById("side").classList.remove("hidden")
+
+}
+
 }
 
 function revealDate(){
 
-document.getElementById("date").classList.remove("hidden")
-document.getElementById("countdown").classList.remove("hidden")
+document.getElementById("music").play()
+
+typeDate()
 
 startHearts()
+
 startCountdown()
+
+}
+
+function typeDate(){
+
+let text="24 AUGUST 2026"
+let i=0
+
+let interval=setInterval(()=>{
+
+document.getElementById("date").classList.remove("hidden")
+
+document.getElementById("date").innerHTML+=text[i]
+
+i++
+
+if(i>=text.length){
+clearInterval(interval)
+}
+
+},120)
 
 }
 
 function startHearts(){
 
-for(let i=0;i<40;i++){
+setInterval(()=>{
 
 let heart=document.createElement("div")
 
@@ -270,7 +350,7 @@ document.body.appendChild(heart)
 
 setTimeout(()=>heart.remove(),6000)
 
-}
+},300)
 
 }
 
@@ -286,7 +366,9 @@ let diff=wedding-now
 
 let days=Math.floor(diff/(1000*60*60*24))
 
-document.getElementById("countdown").innerHTML =
+document.getElementById("countdown").classList.remove("hidden")
+
+document.getElementById("countdown").innerHTML=
 days+" days to go 💍"
 
 },1000)
