@@ -27,7 +27,7 @@ margin:auto;
 
 h1{
 font-family:'Playfair Display', serif;
-font-size:44px;
+font-size:42px;
 color:#ff2e63;
 margin-bottom:5px;
 }
@@ -37,7 +37,7 @@ font-size:16px;
 color:#ff2e63;
 font-weight:500;
 letter-spacing:1px;
-margin-top:-10px;
+margin-top:-8px;
 }
 
 .card{
@@ -77,14 +77,9 @@ margin-top:25px;
 
 .date{
 font-family:'Playfair Display', serif;
-font-size:48px;
-margin-top:25px;
-color:#ff2e63;
-}
-
-canvas{
+font-size:46px;
 margin-top:20px;
-border-radius:12px;
+color:#ff2e63;
 }
 
 #countdown{
@@ -94,14 +89,17 @@ color:#444;
 }
 
 .reveal-title{
-white-space:nowrap;
+font-size:26px;
+margin-bottom:10px;
+word-wrap:break-word;
 }
 
-.confetti{
+.heart{
 position:fixed;
 top:-20px;
-font-size:24px;
+font-size:22px;
 animation:fall linear forwards;
+filter:drop-shadow(0 0 6px pink);
 }
 
 @keyframes fall{
@@ -144,9 +142,9 @@ transform:translateY(110vh) rotate(360deg);
 
 <h2 class="reveal-title">🎉 You unlocked the secret 🎉</h2>
 
-<p>Scratch to reveal the date</p>
+<p>Ready to see our wedding date?</p>
 
-<canvas id="scratch" width="300" height="120"></canvas>
+<button onclick="revealDate()">Reveal the Date 💍</button>
 
 <div id="date" class="date hidden">
 24 AUGUST 2026
@@ -225,8 +223,6 @@ if(step >= currentQuestions.length){
 document.getElementById("quiz").classList.add("hidden")
 document.getElementById("reveal").classList.remove("hidden")
 
-initScratch()
-
 return
 }
 
@@ -248,84 +244,31 @@ step++
 showQuestion()
 }
 
-function initScratch(){
-
-const canvas=document.getElementById("scratch")
-const ctx=canvas.getContext("2d")
-
-ctx.fillStyle="#ff2e63"
-ctx.fillRect(0,0,300,120)
-
-ctx.fillStyle="white"
-ctx.font="20px Poppins"
-ctx.fillText("Scratch Here",90,65)
-
-let scratching=false
-let revealed=false
-
-function scratch(x,y){
-
-ctx.globalCompositeOperation="destination-out"
-
-ctx.beginPath()
-ctx.arc(x,y,20,0,Math.PI*2)
-ctx.fill()
-
-if(!revealed){
-
-revealed=true
+function revealDate(){
 
 document.getElementById("date").classList.remove("hidden")
 document.getElementById("countdown").classList.remove("hidden")
 
-startConfetti()
+startHearts()
 startCountdown()
 
 }
 
-}
-
-canvas.addEventListener("mousedown",()=>scratching=true)
-canvas.addEventListener("mouseup",()=>scratching=false)
-
-canvas.addEventListener("mousemove",(e)=>{
-if(!scratching) return
-scratch(e.offsetX,e.offsetY)
-})
-
-canvas.addEventListener("touchstart",()=>scratching=true)
-canvas.addEventListener("touchend",()=>scratching=false)
-
-canvas.addEventListener("touchmove",(e)=>{
-
-if(!scratching) return
-
-let rect=canvas.getBoundingClientRect()
-
-let x=e.touches[0].clientX-rect.left
-let y=e.touches[0].clientY-rect.top
-
-scratch(x,y)
-
-})
-
-}
-
-function startConfetti(){
+function startHearts(){
 
 for(let i=0;i<40;i++){
 
-let confetti=document.createElement("div")
+let heart=document.createElement("div")
 
-confetti.innerHTML="🎉"
-confetti.classList.add("confetti")
+heart.innerHTML="❤️"
+heart.classList.add("heart")
 
-confetti.style.left=Math.random()*100+"vw"
-confetti.style.animationDuration=(3+Math.random()*3)+"s"
+heart.style.left=Math.random()*100+"vw"
+heart.style.animationDuration=(3+Math.random()*3)+"s"
 
-document.body.appendChild(confetti)
+document.body.appendChild(heart)
 
-setTimeout(()=>confetti.remove(),6000)
+setTimeout(()=>heart.remove(),6000)
 
 }
 
@@ -353,4 +296,5 @@ days+" days to go 💍"
 </script>
 
 </body>
+
 </html>
