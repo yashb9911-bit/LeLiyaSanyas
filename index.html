@@ -72,13 +72,13 @@ display:none;
 img{
 width:100%;
 border-radius:14px;
-margin-top:20px;
+margin-top:25px;
 }
 
 .date{
 font-family:'Playfair Display', serif;
 font-size:48px;
-margin-top:20px;
+margin-top:25px;
 color:#ff2e63;
 }
 
@@ -89,13 +89,24 @@ border-radius:12px;
 
 #countdown{
 font-size:20px;
-margin-top:15px;
+margin-top:10px;
 color:#444;
+}
+
+.reveal-title{
+white-space:nowrap;
+}
+
+.confetti{
+position:fixed;
+top:-20px;
+font-size:24px;
+animation:fall linear forwards;
 }
 
 @keyframes fall{
 to{
-transform:translateY(100vh);
+transform:translateY(110vh) rotate(360deg);
 }
 }
 
@@ -131,7 +142,7 @@ transform:translateY(100vh);
 
 <div id="reveal" class="card hidden">
 
-<h2>🎉 You unlocked the secret 🎉</h2>
+<h2 class="reveal-title">🎉 You unlocked the secret 🎉</h2>
 
 <p>Scratch to reveal the date</p>
 
@@ -257,7 +268,7 @@ function scratch(x,y){
 ctx.globalCompositeOperation="destination-out"
 
 ctx.beginPath()
-ctx.arc(x,y,18,0,Math.PI*2)
+ctx.arc(x,y,20,0,Math.PI*2)
 ctx.fill()
 
 if(!revealed){
@@ -282,13 +293,8 @@ if(!scratching) return
 scratch(e.offsetX,e.offsetY)
 })
 
-canvas.addEventListener("touchstart",(e)=>{
-scratching=true
-})
-
-canvas.addEventListener("touchend",(e)=>{
-scratching=false
-})
+canvas.addEventListener("touchstart",()=>scratching=true)
+canvas.addEventListener("touchend",()=>scratching=false)
 
 canvas.addEventListener("touchmove",(e)=>{
 
@@ -307,21 +313,19 @@ scratch(x,y)
 
 function startConfetti(){
 
-for(let i=0;i<60;i++){
+for(let i=0;i<40;i++){
 
 let confetti=document.createElement("div")
 
 confetti.innerHTML="🎉"
+confetti.classList.add("confetti")
 
-confetti.style.position="fixed"
 confetti.style.left=Math.random()*100+"vw"
-confetti.style.top="-20px"
-confetti.style.fontSize="30px"
-confetti.style.animation="fall 3s linear"
+confetti.style.animationDuration=(3+Math.random()*3)+"s"
 
 document.body.appendChild(confetti)
 
-setTimeout(()=>confetti.remove(),3000)
+setTimeout(()=>confetti.remove(),6000)
 
 }
 
@@ -339,7 +343,8 @@ let diff=wedding-now
 
 let days=Math.floor(diff/(1000*60*60*24))
 
-document.getElementById("countdown").innerHTML = days+" days to go 💍"
+document.getElementById("countdown").innerHTML =
+days+" days to go 💍"
 
 },1000)
 
